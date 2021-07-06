@@ -44,6 +44,15 @@ public class SplitInsuranceMBWayController {
 			throws SourceStateException, TargetStateException, NoSourcePhoneException, 
 			NoTargetPhoneException, SibsException, AccountException, OperationException, 
 			AmountBiggerThanZeroException, AmountLessThanZeroException {
+		//GetPayers
+		getPayers();
+		//VerifyAmounts
+		verifyAmounts();
+	}
+
+	private void getPayers() 
+			throws TargetStateException, NoTargetPhoneException, 
+			SourceStateException, NoSourcePhoneException {
 		
 		while (this.person_count <= this.nMembers) {
 			//OpenScanner
@@ -59,8 +68,13 @@ public class SplitInsuranceMBWayController {
 				this.person_count++;
 			}
 		}
-		//VerifyAmounts
-		if (verifyAmounts()) {
+	}
+	
+	private void verifyAmounts() 
+			throws AmountBiggerThanZeroException, AmountLessThanZeroException, 
+			SibsException, AccountException, OperationException {
+		
+		if (verifyFinalValue()) {
 			transferAll();
 		}
 		else {
@@ -70,7 +84,7 @@ public class SplitInsuranceMBWayController {
 				throw new AmountLessThanZeroException();
 		}	
 	}
-	
+
 	private void transaction(String[] input) 
 			throws TargetStateException, NoTargetPhoneException, 
 			SourceStateException, NoSourcePhoneException {
@@ -100,15 +114,13 @@ public class SplitInsuranceMBWayController {
 		return input;
 	}
 
-	//VerifyAmounts
-	public boolean verifyAmounts() {
+	public boolean verifyFinalValue() {
 		for (Friend f : this.friends) {
 			this.amount -= f.getAmount();
 		}
 		return this.amount == 0;
 	}
 	
-	//TransferAll
 	public void transferAll() throws SibsException, AccountException, OperationException {
 		for (Friend f : this.friends) {
 			transfer(f.getClient(), f.getAmount());
@@ -116,7 +128,6 @@ public class SplitInsuranceMBWayController {
 		}
 	}
 		
-	//Transfer
 	public void transfer(MBWayClient src_client, int amount) throws SibsException, AccountException, OperationException {
 		//VerifySourceAccountBalance
 		if (this.svc.getAccountByIban(src_client.getIban()).getBalance() >= amount) {
@@ -154,7 +165,5 @@ public class SplitInsuranceMBWayController {
 		}
 		else
 			throw new NoTargetPhoneException();
-		
 	}
-
 }

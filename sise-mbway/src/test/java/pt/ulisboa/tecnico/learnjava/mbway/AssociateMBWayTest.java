@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.learnjava.mbway;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,31 +27,31 @@ public class AssociateMBWayTest {
 	private static final String NIF1 = "297109681";
 	private static final String LAST_NAME1 = "Marques";
 	private static final String FIRST_NAME1 = "Carolina";
-	private static String firstIban;
+	private String firstIban;
 	//Data_Client2 - Vera Pires
 	private static final String ADDRESS2 = "Rua das couves";
 	private static final String PHONE_NUMBER2 = "928039152";
 	private static final String NIF2 = "279019271";
 	private static final String LAST_NAME2 = "Pires";
 	private static final String FIRST_NAME2 = "Vera";
-	private static String secondIban;
+	private String secondIban;
 	//Data_Client3 - Joao Monteiro
 	private static final String ADDRESS3 = "Praceta Timor";
 	private static final String PHONE_NUMBER3 = "914103291";
 	private static final String NIF3 = "273918231";
 	private static final String LAST_NAME3 = "Monteiro";
 	private static final String FIRST_NAME3 = "Joao";
-	private static String thirdIban;
+	private String thirdIban;
 	//Banks
-	private static Bank firstBank;
-	private static Bank secondBank;
-	private static Bank thirdBank;
+	private Bank firstBank;
+	private Bank secondBank;
+	private Bank thirdBank;
 	//Clients
-	private static Client firstClient;
-	private static Client secondClient;
-	private static Client thirdClient;
+	private Client firstClient;
+	private Client secondClient;
+	private Client thirdClient;
 	//MBWay
-	private static MBWay MBWay;
+	private MBWay MBWay;
 	
 	
 	@Before
@@ -58,62 +59,67 @@ public class AssociateMBWayTest {
 		//SET-UP
 		//----------
 		//SetBanks
-		firstBank = new Bank("CGD");
-		secondBank = new Bank("BPI");
-		thirdBank = new Bank("STD");
+		this.firstBank = new Bank("CGD");
+		this.secondBank = new Bank("BPI");
+		this.thirdBank = new Bank("STD");
 		//SetClients
-		firstClient = new Client(firstBank, FIRST_NAME1, LAST_NAME1, NIF1, PHONE_NUMBER1, ADDRESS1, 24);
-		secondClient = new Client(secondBank, FIRST_NAME2, LAST_NAME2, NIF2, PHONE_NUMBER2, ADDRESS2, 25);
-		thirdClient = new Client(thirdBank, FIRST_NAME3, LAST_NAME3, NIF3, PHONE_NUMBER3, ADDRESS3, 22);
+		this.firstClient = new Client(this.firstBank, FIRST_NAME1, LAST_NAME1, NIF1, PHONE_NUMBER1, ADDRESS1, 24);
+		this.secondClient = new Client(this.secondBank, FIRST_NAME2, LAST_NAME2, NIF2, PHONE_NUMBER2, ADDRESS2, 25);
+		this.thirdClient = new Client(this.thirdBank, FIRST_NAME3, LAST_NAME3, NIF3, PHONE_NUMBER3, ADDRESS3, 22);
 		//SetAccounts
-		firstIban = firstBank.createAccount(AccountType.CHECKING, firstClient, 20000, 0);
-		secondIban = secondBank.createAccount(AccountType.CHECKING, secondClient, 15000, 0);
-		thirdIban = thirdBank.createAccount(AccountType.CHECKING, thirdClient, 10000, 0);
+		this.firstIban = this.firstBank.createAccount(AccountType.CHECKING, firstClient, 20000, 0);
+		this.secondIban = this.secondBank.createAccount(AccountType.CHECKING, secondClient, 15000, 0);
+		this.thirdIban = this.thirdBank.createAccount(AccountType.CHECKING, thirdClient, 10000, 0);
 		//SetMBWay
-		MBWay = new MBWay();
+		this.MBWay = new MBWay();
 		//----------
 	}
 
 	@Test
 	public void success() throws BankException, ClientException, AccountException, AccountExistsException {
 		//VerifyAccountCreation
-		assertEquals("CGDCK1", firstIban);
-		assertEquals("BPICK2", secondIban);
-		assertEquals("STDCK3", thirdIban);
+		assertEquals("CGDCK1", this.firstIban);
+		assertEquals("BPICK2", this.secondIban);
+		assertEquals("STDCK3", this.thirdIban);
 		
 		//FirstClient - Verify IBAN, Phone number and Generated Code from process
-		AssociateMBWayController c1 = new AssociateMBWayController(firstIban, firstClient.getPhoneNumber(), MBWay);
-		assertEquals(c1.getIban(), firstIban);
-		assertEquals(c1.getPhoneNumber(), firstClient.getPhoneNumber());
+		AssociateMBWayController c1 = new AssociateMBWayController(this.firstIban, this.firstClient.getPhoneNumber(), this.MBWay);
+		assertEquals(c1.getIban(), this.firstIban);
+		assertEquals(c1.getPhoneNumber(), this.firstClient.getPhoneNumber());
 		c1.process();
 		assertEquals(String.valueOf(c1.getCode()), 
-				MBWay.getMBWayClients().get(firstClient.getPhoneNumber()).getCode());
+				this.MBWay.getMBWayClients().get(this.firstClient.getPhoneNumber()).getCode());
 		//SecondClient - Verify IBAN, Phone number and Generated Code from process
-		c1 = new AssociateMBWayController(secondIban, secondClient.getPhoneNumber(), MBWay);
-		assertEquals(c1.getIban(), secondIban);
-		assertEquals(c1.getPhoneNumber(), secondClient.getPhoneNumber());
+		c1 = new AssociateMBWayController(this.secondIban, this.secondClient.getPhoneNumber(), this.MBWay);
+		assertEquals(c1.getIban(), this.secondIban);
+		assertEquals(c1.getPhoneNumber(), this.secondClient.getPhoneNumber());
 		c1.process();
 		assertEquals(String.valueOf(c1.getCode()), 
-				MBWay.getMBWayClients().get(secondClient.getPhoneNumber()).getCode());
+				this.MBWay.getMBWayClients().get(this.secondClient.getPhoneNumber()).getCode());
 		//ThirdClient - Verify IBAN, Phone number and Generated Code from process
-		c1 = new AssociateMBWayController(thirdIban, thirdClient.getPhoneNumber(), MBWay);
-		assertEquals(c1.getIban(), thirdIban);
-		assertEquals(c1.getPhoneNumber(), thirdClient.getPhoneNumber());
+		c1 = new AssociateMBWayController(this.thirdIban, this.thirdClient.getPhoneNumber(), this.MBWay);
+		assertEquals(c1.getIban(), this.thirdIban);
+		assertEquals(c1.getPhoneNumber(), this.thirdClient.getPhoneNumber());
 		c1.process();
 		assertEquals(String.valueOf(c1.getCode()), 
-				MBWay.getMBWayClients().get(thirdClient.getPhoneNumber()).getCode());
+				this.MBWay.getMBWayClients().get(this.thirdClient.getPhoneNumber()).getCode());
 		
 		//Client 1 added but state not verified
-		assertEquals(MBWay.getMBWayClients().containsKey(firstClient.getPhoneNumber()), true);
-		assertEquals(MBWay.getMBWayClients().get(firstClient.getPhoneNumber()).getState(), false);
+		assertEquals(this.MBWay.getMBWayClients().containsKey(this.firstClient.getPhoneNumber()), true);
+		assertEquals(this.MBWay.getMBWayClients().get(this.firstClient.getPhoneNumber()).getState(), false);
 		
 		//Client 2 added but state not verified
-		assertEquals(MBWay.getMBWayClients().containsKey(secondClient.getPhoneNumber()), true);
-		assertEquals(MBWay.getMBWayClients().get(secondClient.getPhoneNumber()).getState(), false);
+		assertEquals(this.MBWay.getMBWayClients().containsKey(this.secondClient.getPhoneNumber()), true);
+		assertEquals(this.MBWay.getMBWayClients().get(this.secondClient.getPhoneNumber()).getState(), false);
 		
 		//Client 3 added but state not verified
-		assertEquals(MBWay.getMBWayClients().containsKey(thirdClient.getPhoneNumber()), true);
-		assertEquals(MBWay.getMBWayClients().get(thirdClient.getPhoneNumber()).getState(), false);
+		assertEquals(this.MBWay.getMBWayClients().containsKey(this.thirdClient.getPhoneNumber()), true);
+		assertEquals(this.MBWay.getMBWayClients().get(this.thirdClient.getPhoneNumber()).getState(), false);
+	}
+	
+	@After
+	public void tearDown() {
+		Bank.clearBanks();
 	}
 
 
