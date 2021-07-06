@@ -24,6 +24,7 @@ public class SplitInsuranceMBWayController {
 	private MBWay MBWay;
 	private String friend_phone;
 	private int friend_amount;
+	private int person_count = 1;
 	
 	//ForTransferOperations
 	private MBWayClient src_client, trg_client;
@@ -44,27 +45,18 @@ public class SplitInsuranceMBWayController {
 			NoTargetPhoneException, SibsException, AccountException, OperationException, 
 			AmountBiggerThanZeroException, AmountLessThanZeroException {
 		
-		int i = 1;
-		while (i <= this.nMembers) {
-			//GetFriends
-			Scanner command = new Scanner(System.in);
-			System.out.println("Enter friend #" + i + ": ");
-			String cmd = command.nextLine();
-			String[] input = cmd.split(" ");
-			if (input[0].equals("friend") && i == 1) {
-				this.friend_phone = input[1];
-				this.friend_amount = Integer.valueOf(input[2]);
-				mbwayVerificationTarget();
-				this.amount -= this.friend_amount;
-				i++;
+		while (this.person_count <= this.nMembers) {
+			//OpenScanner
+			String[] input = openScanner();
+			//Get the first friend (MainPerson)
+			if (input[0].equals("friend") && this.person_count == 1) {
+				transaction(input);
+				this.person_count++;
 			}
+			//Get the rest of friends
 			else if (input[0].equals("friend")) {
-				this.friend_phone = input[1];
-				this.friend_amount = Integer.valueOf(input[2]);
-				mbwayVerificationSource();
-				this.friends.add(new Friend(this.src_client, friend_amount));
-				System.out.println("Friend added.");
-				i++;
+				transaction(input);
+				this.person_count++;
 			}
 		}
 		//VerifyAmounts
@@ -79,6 +71,35 @@ public class SplitInsuranceMBWayController {
 		}	
 	}
 	
+	private void transaction(String[] input) 
+			throws TargetStateException, NoTargetPhoneException, 
+			SourceStateException, NoSourcePhoneException {
+		//Get inserted info
+		this.friend_phone = input[1];
+		this.friend_amount = Integer.valueOf(input[2]);
+		//MainPerson
+		if (this.person_count == 1) {
+			mbwayVerificationTarget();
+			this.amount -= this.friend_amount;
+			System.out.println("Main person added.");
+		}
+		//Friend
+		else {
+			mbwayVerificationSource();
+			this.friends.add(new Friend(this.src_client, this.friend_amount));
+			System.out.println("Friend added.");
+		}
+	}
+	
+
+	public String[] openScanner() {
+		Scanner command = new Scanner(System.in);
+		System.out.println("Enter friend #" + this.person_count + ": ");
+		String cmd = command.nextLine();
+		String[] input = cmd.split(" ");
+		return input;
+	}
+
 	//VerifyAmounts
 	public boolean verifyAmounts() {
 		for (Friend f : this.friends) {
