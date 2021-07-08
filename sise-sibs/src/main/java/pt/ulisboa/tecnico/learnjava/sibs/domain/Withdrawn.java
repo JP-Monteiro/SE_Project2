@@ -8,20 +8,10 @@ public class Withdrawn extends State{
 	private Services svc = new Services();
 	
 	@Override
-	public void process(Operation op){
-		try {
-			svc.deposit(op.getTargetIban(), op.getValue());
-	        op.setState(new Deposited());
-		} catch(AccountException e) {
-			op.setState(new Retry(this));
-		}
-    }
-	
-	@Override
-	public void processRetry(Operation op) throws AccountException {
+	public void process(Operation op) throws AccountException{
 		svc.deposit(op.getTargetIban(), op.getValue());
-		op.setState(new Deposited());
-	}
+        op.setState(new Deposited());
+    }
 	
 	@Override
 	public void cancel(Operation op) throws AccountException {

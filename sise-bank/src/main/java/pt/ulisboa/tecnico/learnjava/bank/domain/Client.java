@@ -21,7 +21,8 @@ public class Client {
 
 	public Client(Bank bank, String firstName, String lastName, String nif, String phoneNumber, String address, int age)
 			throws ClientException {
-		checkParameters(bank, nif, phoneNumber, age);
+		/*This is the refactor for guideline: Keep Unit Interfaces Small <Creation of class ClientParameters>*/
+		checkParameters(new ClientParameters(bank, nif, phoneNumber, age));
 
 		this.bank = bank;
 		this.firstName = firstName;
@@ -33,21 +34,22 @@ public class Client {
 
 		bank.addClient(this);
 	}
-
-	private void checkParameters(Bank bank, String nif, String phoneNumber, int age) throws ClientException {
-		if (age < 0) {
+	
+	/*This is the refactor for guideline: Keep Unit Interfaces Small <Creation of class ClientParameters>*/
+	private void checkParameters(ClientParameters parameters) throws ClientException {
+		if (parameters.getAge() < 0) {
 			throw new ClientException();
 		}
-
-		if (nif.length() != 9 || !nif.matches("[0-9]+")) {
+	
+		if (parameters.getNif().length() != 9 || !parameters.getNif().matches("[0-9]+")) {
 			throw new ClientException();
 		}
-
-		if (phoneNumber.length() != 9 || !phoneNumber.matches("[0-9]+")) {
+	
+		if (parameters.getPhoneNumber().length() != 9 || !parameters.getPhoneNumber().matches("[0-9]+")) {
 			throw new ClientException();
 		}
-
-		if (bank.getClientByNif(nif) != null) {
+	
+		if (parameters.getBank().getClientByNif(nif) != null) {
 			throw new ClientException();
 		}
 	}

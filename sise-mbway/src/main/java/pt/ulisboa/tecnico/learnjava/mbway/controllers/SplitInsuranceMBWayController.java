@@ -44,9 +44,11 @@ public class SplitInsuranceMBWayController {
 			throws SourceStateException, TargetStateException, NoSourcePhoneException, 
 			NoTargetPhoneException, SibsException, AccountException, OperationException, 
 			AmountBiggerThanZeroException, AmountLessThanZeroException {
-		//GetPayers
+		/*This is the refactor for guideline: Write Short Units of Code <Creation of getPayers()>*/
+		/*This is the refactor for guideline: Write Simple Units of Code <Creation of getPayers()>*/
 		getPayers();
-		//VerifyAmounts
+		/*This is the refactor for guideline: Write Short Units of Code <Creation of verifyAmounts()>*/
+		/*This is the refactor for guideline: Write Simple Units of Code <Creation of verifyAmounts()>*/
 		verifyAmounts();
 	}
 
@@ -59,12 +61,12 @@ public class SplitInsuranceMBWayController {
 			String[] input = openScanner();
 			//Get the first friend (MainPerson)
 			if (input[0].equals("friend") && this.person_count == 1) {
-				transaction(input);
+				prepareTransaction(input);
 				this.person_count++;
 			}
 			//Get the rest of friends
 			else if (input[0].equals("friend")) {
-				transaction(input);
+				prepareTransaction(input);
 				this.person_count++;
 			}
 		}
@@ -85,7 +87,7 @@ public class SplitInsuranceMBWayController {
 		}	
 	}
 
-	private void transaction(String[] input) 
+	private void prepareTransaction(String[] input) 
 			throws TargetStateException, NoTargetPhoneException, 
 			SourceStateException, NoSourcePhoneException {
 		//Get inserted info
@@ -95,20 +97,20 @@ public class SplitInsuranceMBWayController {
 		if (this.person_count == 1) {
 			mbwayVerificationTarget();
 			this.amount -= this.friend_amount;
-			System.out.println("Main person added.");
+			System.out.println("(#From controller): Main person added.");
 		}
 		//Friend
 		else {
 			mbwayVerificationSource();
 			this.friends.add(new Friend(this.src_client, this.friend_amount));
-			System.out.println("Friend added.");
+			System.out.println("(#From controller): Friend added.");
 		}
 	}
 	
 
 	public String[] openScanner() {
 		Scanner command = new Scanner(System.in);
-		System.out.println("Enter friend #" + this.person_count + ": ");
+		System.out.println("(#From controller): Enter friend #" + this.person_count + "/" + this.nMembers + ": ");
 		String cmd = command.nextLine();
 		String[] input = cmd.split(" ");
 		return input;
